@@ -13,7 +13,7 @@ class Result {
   Result(this.identity, this.accessToken);
 }
 
-/// Register with a local token generator using URL http://localhost:3000/token. This is a function to generate token for twilio voice.
+/// Register with a local token generator using URL http://https://us-central1-twilio-voip-app.cloudfunctions.net/accessToken/token. This is a function to generate token for twilio voice.
 /// [generateLocalAccessToken] is the default method for registering
 ///
 /// Returned data should contained the following format:
@@ -23,9 +23,9 @@ class Result {
 /// }
 Future<Result?> generateLocalAccessToken() async {
   printDebug("voip-registering with token ");
-  printDebug("GET http://localhost:3000/token");
+  printDebug("GET https://us-central1-twilio-voip-app.cloudfunctions.net/accessToken");
 
-  final uri = Uri.http("localhost:3000", "/token");
+  final uri = Uri.http("https://us-central1-twilio-voip-app.cloudfunctions.net", "/accessToken");
   final result = await http.get(uri);
   if (result.statusCode >= 200 && result.statusCode < 300) {
     printDebug("Error requesting token from server [${uri.toString()}]");

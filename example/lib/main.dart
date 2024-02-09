@@ -31,7 +31,8 @@ enum RegistrationMethod {
 
   static RegistrationMethod? fromString(String? value) {
     if (value == null) return null;
-    return RegistrationMethod.values.firstWhereOrNull((element) => element.name == value);
+    return RegistrationMethod.values
+        .firstWhereOrNull((element) => element.name == value);
   }
 
   static RegistrationMethod? loadFromEnvironment() {
@@ -43,17 +44,16 @@ enum RegistrationMethod {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
-    if(firebaseEnabled) {
-
+    if (firebaseEnabled) {
       // Add firebase config here
       const options = FirebaseOptions(
-        apiKey: '',
-        appId: '',
+        apiKey: 'AIzaSyAr8r3aq2O7BhiCZ3BDHgpnjMBTocOjdbo',
+        appId: '1:893961780876:android:f0d9237ebd2262b72945a9',
         messagingSenderId: '',
-        projectId: '',
+        projectId: 'twilio-voip-app',
         authDomain: '',
         databaseURL: '',
-        storageBucket: '',
+        storageBucket: 'twilio-voip-app.appspot.com',
         measurementId: '',
       );
 
@@ -68,11 +68,13 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  if(firebaseEnabled) {
+  if (firebaseEnabled) {
     FirebaseAnalytics.instance.logEvent(name: "app_started");
   }
 
-  final app = App(registrationMethod: RegistrationMethod.loadFromEnvironment() ?? RegistrationMethod.env);
+  final app = App(
+      registrationMethod:
+          RegistrationMethod.loadFromEnvironment() ?? RegistrationMethod.env);
   return runApp(MaterialApp(home: app));
 }
 
@@ -134,10 +136,18 @@ class _AppState extends State<App> {
       }
     }
 
-    if(firebaseEnabled) {
+    if (firebaseEnabled) {
       FirebaseAnalytics.instance.logEvent(name: "registration", parameters: {
         "method": widget.registrationMethod.name,
-        "platform": kIsWeb ? "web" : Platform.isAndroid ? "android" : Platform.isIOS ? "ios" : Platform.isMacOS ? "macos" : "unknown"
+        "platform": kIsWeb
+            ? "web"
+            : Platform.isAndroid
+                ? "android"
+                : Platform.isIOS
+                    ? "ios"
+                    : Platform.isMacOS
+                        ? "macos"
+                        : "unknown"
       });
     }
   }
@@ -147,12 +157,13 @@ class _AppState extends State<App> {
     printDebug("voip-registering access token");
 
     String? androidToken;
-    if(!kIsWeb && Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       // Get device token for Android only
       androidToken = await FirebaseMessaging.instance.getToken();
       printDebug("androidToken is ${androidToken!}");
     }
-    final result = await TwilioVoice.instance.setTokens(accessToken: accessToken, deviceToken: androidToken);
+    final result = await TwilioVoice.instance
+        .setTokens(accessToken: accessToken, deviceToken: androidToken);
     return result ?? false;
   }
 
@@ -172,7 +183,8 @@ class _AppState extends State<App> {
 
     printDebug("voip-registering with environment variables");
     if (myId == null || myToken == null) {
-      printDebug("Failed to register with environment variables, please provide ID and TOKEN");
+      printDebug(
+          "Failed to register with environment variables, please provide ID and TOKEN");
       return false;
     }
     userId = myId;
@@ -279,7 +291,8 @@ class _AppState extends State<App> {
           // applies to web only
           if (kIsWeb || Platform.isAndroid) {
             final activeCall = TwilioVoice.instance.call.activeCall;
-            if (activeCall != null && activeCall.callDirection == CallDirection.incoming) {
+            if (activeCall != null &&
+                activeCall.callDirection == CallDirection.incoming) {
               _showWebIncomingCallDialog();
             }
           }
@@ -319,7 +332,10 @@ class _AppState extends State<App> {
       return;
     }
     printDebug("starting call to $clientIdentifier");
-    TwilioVoice.instance.call.place(to: clientIdentifier, from: userId, extraOptions: {"_TWI_SUBJECT": "Company Name"});
+    TwilioVoice.instance.call.place(
+        to: clientIdentifier,
+        from: userId,
+        extraOptions: {"_TWI_SUBJECT": "Company Name"});
   }
 
   Future<void> _onRegisterWithToken(String token, [String? identity]) async {
@@ -398,7 +414,8 @@ class _AppState extends State<App> {
     }
   }
 
-  Future<bool?> showIncomingCallScreen(BuildContext context, ActiveCall activeCall) async {
+  Future<bool?> showIncomingCallScreen(
+      BuildContext context, ActiveCall activeCall) async {
     if (!kIsWeb && !Platform.isAndroid) {
       printDebug("showIncomingCallScreen only for web");
       return false;
@@ -435,7 +452,8 @@ class _LogoutAction extends StatelessWidget {
   final void Function()? onSuccess;
   final void Function(String error)? onFailure;
 
-  const _LogoutAction({Key? key, this.onSuccess, this.onFailure}) : super(key: key);
+  const _LogoutAction({Key? key, this.onSuccess, this.onFailure})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

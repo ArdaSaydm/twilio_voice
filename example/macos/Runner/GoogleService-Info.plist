@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCLG5ton-8MFRSj00JXvrgLjeaxdYiC1_o</string>
+	<key>GCM_SENDER_ID</key>
+	<string>893961780876</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.twilio.twilioVoiceExample</string>
+	<key>PROJECT_ID</key>
+	<string>twilio-voip-app</string>
+	<key>STORAGE_BUCKET</key>
+	<string>twilio-voip-app.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:893961780876:ios:426faf093cc5f54d2945a9</string>
+</dict>
+</plist>
