@@ -13,7 +13,7 @@ class Result {
   Result(this.identity, this.accessToken);
 }
 
-/// Register with a local token generator using URL http://https://us-central1-twilio-voip-app.cloudfunctions.net/accessToken/token. This is a function to generate token for twilio voice.
+/// Register with a local token generator using URL https://us-central1-twilio-voip-app.cloudfunctions.net/accessToken/token. This is a function to generate token for twilio voice.
 /// [generateLocalAccessToken] is the default method for registering
 ///
 /// Returned data should contained the following format:
@@ -23,26 +23,49 @@ class Result {
 /// }
 Future<Result?> generateLocalAccessToken() async {
   printDebug("voip-registering with token ");
-  printDebug("GET https://us-central1-twilio-voip-app.cloudfunctions.net/accessToken");
+  printDebug("POST https://us-central1-twilio-voip-app.cloudfunctions.net/accessToken");
 
-  final uri = Uri.http("https://us-central1-twilio-voip-app.cloudfunctions.net", "/accessToken");
-  final result = await http.get(uri);
-  if (result.statusCode >= 200 && result.statusCode < 300) {
-    printDebug("Error requesting token from server [${uri.toString()}]");
-    printDebug(result.body);
-    return null;
-  }
-  final data = jsonDecode(result.body);
-  final identity = data["identity"] as String?;
-  final token = data["token"] as String?;
+  final uri = Uri.https("us-central1-twilio-voip-app.cloudfunctions.net", "/accessToken");
+  
+  // Specify the JSON data to be sent in the request body
+  final jsonData = {
+    "data": {
+      "isAndroid": true,
+      "production": true
+    }
+  };
 
-  if (identity == null || token == null) {
-    printDebug("Error requesting token from server [${uri.toString()}]");
-    printDebug(result.body);
-    return null;
+  try {
+    final result = await http.post(
+      uri,
+      body: json.encode(jsonData), // Encode the JSON data to a string
+      headers: {"Content-Type": "application/json"}, // Specify the content type as JSON
+    );
+
+    if (result.statusCode >= 200 && result.statusCode < 300) {
+      final data = jsonDecode(result.body);
+      final identity = data["result"]["identity"] as String?;
+      final token = data["result"]["token"] as String?;
+
+      if (identity == null || token == null) {
+        printDebug("Error: Identity or token is null");
+        return null;
+      }
+
+      printDebug("Token: $token, Identity: $identity");
+
+      return Result(identity, token);
+    } else {
+      printDebug("Error: Request failed with status code ${result.statusCode}");
+      printDebug(result.body);
+    }
+  } catch (e) {
+    printDebug("Error: Exception occurred during request: $e");
   }
-  return Result(identity, token);
+
+  return null;
 }
+
 
 /// Register with a firebase function token generator using function name 'voice-accessToken', this is a function to generate token for twilio voice.
 ///
@@ -55,14 +78,14 @@ Future<Result?> generateLocalAccessToken() async {
 Future<Result?> generateFirebaseAccessToken() async {
   printDebug("voip-registtering with token ");
   printDebug("voip-calling voice-accessToken");
-  final function = FirebaseFunctions.instance.httpsCallable("voice-accessToken");
+  final function =
+      FirebaseFunctions.instance.httpsCallable("voice-accessToken");
 
   final params = {
     "platform": Platform.isIOS ? "iOS" : "Android",
   };
 
   final result = await function.call(params);
-
 
   final data = jsonDecode(result.data);
   final identity = data["identity"] as String?;

@@ -49,69 +49,69 @@ class _UICallScreenState extends State<UICallScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        TextFormField(
-          key: _identifierKey,
-          controller: _controller,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return "Please enter a client identifier";
-            }
-            return null;
-          },
-          decoration: const InputDecoration(labelText: 'Client Identifier or Phone Number'),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          children: [
-            Text("My Identity: ${widget.userId}"),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => _copyToClipboard(widget.userId),
-              child: _copied ? const Icon(Icons.check, color: Colors.green, size: 16) : const Icon(Icons.copy, size: 16),
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          TextFormField(
+            key: _identifierKey,
+            controller: _controller,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter a client identifier";
+              }
+              return null;
+            },
+            decoration: const InputDecoration(labelText: 'Client Identifier or Phone Number'),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            children: [
+              Text("My Identity: ${widget.userId}"),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () => _copyToClipboard(widget.userId),
+                child: _copied ? const Icon(Icons.check, color: Colors.green, size: 16) : const Icon(Icons.copy, size: 16),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          CallActions(
+            canCall: true,
+            onPerformCall: () {
+              final identifier = _identifierKey.currentState?.value;
+              if (identifier != null && identifier.isNotEmpty) {
+                widget.onPerformCall(identifier);
+              }
+            },
+          ),
+          const SizedBox(height: 10),
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CallStatus(),
             ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        CallActions(
-          canCall: true,
-          onPerformCall: () {
-            final identifier = _identifierKey.currentState?.value;
-            if (identifier != null && identifier.isNotEmpty) {
-              widget.onPerformCall(identifier);
-            }
-          },
-        ),
-        const SizedBox(height: 10),
-        const Card(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CallStatus(),
           ),
-        ),
-        const Card(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CallControls(),
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CallControls(),
+            ),
           ),
-        ),
-        const Card(
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: PermissionsBlock(),
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: PermissionsBlock(),
+            ),
           ),
-        ),
-        const Divider(),
-        Expanded(
-          child: Column(
+          const Divider(),
+          Column(
             children: [
               Text("Events (latest at top)", style: Theme.of(context).textTheme.titleLarge),
               const TwilioLog(),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

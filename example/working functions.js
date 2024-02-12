@@ -22,23 +22,23 @@ exports.accessToken = functions.https.onCall((payload, context) => {
     console.log('creating access token for ', userId);
 
     //configuration using firebase environment variables
-    const twilioConfig = functions.config().twilio;
+    // const twilioConfig = functions.config().twilio;
     
-    const accountSid = twilioConfig.account_sid;
-    const apiKey = twilioConfig.api_key;
-    const apiSecret = twilioConfig.api_key_secret;
-    const outgoingApplicationSid = twilioConfig.app_sid;
+    const accountSid = "AC312f7cda8703542c1bd18a8e17e9688a";
+    const apiKey = "SK103698263ff97a5717ede4d8bffb6abb";
+    const apiSecret = "Ik793HmsCLtyMCSowrSXJ8czKvTFxUrK";
+    const outgoingApplicationSid = "AP93652956b4455e3a635f2e621f648256";
 
     // Used specifically for creating Voice tokens, we need to use seperate push credentials for each platform.
     // iOS has different APNs environments, so we need to distinguish between sandbox & production as the one won't work in the other.
     let pushCredSid;
     if (payload.isIOS === true) {
         console.log('creating access token for iOS');
-        pushCredSid = payload.production ? twilioConfig.apple_push_credential_release
-            : (twilioConfig.apple_push_credential_debug || twilioConfig.apple_push_credential_release);
+        pushCredSid = payload.production ? "CR75578fd274548c986e046c83b11be832"
+            : ("CR75578fd274548c986e046c83b11be832" || "CR75578fd274548c986e046c83b11be832");
     } else if (payload.isAndroid === true) {
         console.log('creating access token for Android');
-        pushCredSid = twilioConfig.android_push_credential;
+        pushCredSid = "CR75578fd274548c986e046c83b11be832";
     } else {
         throw new functions.https.HttpsError('unknown_platform', 'No platform specified');
     }
@@ -55,17 +55,17 @@ exports.accessToken = functions.https.onCall((payload, context) => {
 
     // Create an access token which we will sign and return to the client,
     // containing the grant we just created
-    const token = new AccessToken(accountSid, apiKey, apiSecret, { identity: userId });
+    const token = new AccessToken(accountSid, apiKey, apiSecret,{ identity: userId });
     token.addGrant(voiceGrant);
 
     // use firebase ID for identity
-    token.identity = userId;
+    // token.identity = userId;
     console.log(`Token:${token.toJwt()}`);
 
     // return json object
     return {
         "token": token.toJwt(),
         "identity": userId,
-        // "expiry_date": dateTime.getTime()
+        "expiry_date": dateTime.getTime()
     };
 });

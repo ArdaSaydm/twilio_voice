@@ -123,113 +123,111 @@ class _PermissionsBlockState extends State<PermissionsBlock> with WidgetsBinding
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // permissions
-          Text("Permissions", style: Theme.of(context).textTheme.titleLarge),
-
-          Column(
-            children: [
+    return Column(
+      children: [
+        // permissions
+        Text("Permissions", style: Theme.of(context).textTheme.titleLarge),
+    
+        Column(
+          children: [
+            PermissionTile(
+              icon: Icons.mic,
+              title: "Microphone",
+              granted: _hasMicPermission,
+              onRequestPermission: () async {
+                await _tv.requestMicAccess();
+                setMicPermission = await _tv.hasMicAccess();
+              },
+            ),
+    
+            if (firebaseEnabled && Firebase.apps.isNotEmpty)
               PermissionTile(
-                icon: Icons.mic,
-                title: "Microphone",
-                granted: _hasMicPermission,
+                icon: Icons.notifications,
+                title: "Notifications",
+                granted: _hasBackgroundPermissions,
                 onRequestPermission: () async {
-                  await _tv.requestMicAccess();
-                  setMicPermission = await _tv.hasMicAccess();
+                  await FirebaseMessaging.instance.requestPermission();
+                  final settings = await FirebaseMessaging.instance.getNotificationSettings();
+                  setBackgroundPermission = settings.authorizationStatus == AuthorizationStatus.authorized;
                 },
               ),
-
-              if (firebaseEnabled && Firebase.apps.isNotEmpty)
-                PermissionTile(
-                  icon: Icons.notifications,
-                  title: "Notifications",
-                  granted: _hasBackgroundPermissions,
-                  onRequestPermission: () async {
-                    await FirebaseMessaging.instance.requestPermission();
-                    final settings = await FirebaseMessaging.instance.getNotificationSettings();
-                    setBackgroundPermission = settings.authorizationStatus == AuthorizationStatus.authorized;
-                  },
+    
+            // if android
+            if (!kIsWeb && Platform.isAndroid)
+              PermissionTile(
+                icon: Icons.phone,
+                title: "Read Phone State",
+                granted: _hasReadPhoneStatePermission,
+                onRequestPermission: () async {
+                  await _tv.requestReadPhoneStatePermission();
+                  setReadPhoneStatePermission = await _tv.hasReadPhoneStatePermission();
+                },
+              ),
+    
+            // if android
+            if (!kIsWeb && Platform.isAndroid)
+              PermissionTile(
+                icon: Icons.phone,
+                title: "Read Phone Numbers",
+                granted: _hasReadPhoneNumbersPermission,
+                onRequestPermission: () async {
+                  await _tv.requestReadPhoneNumbersPermission();
+                  setReadPhoneNumbersPermission = await _tv.hasReadPhoneNumbersPermission();
+                },
+              ),
+    
+            // if android
+            if (!kIsWeb && Platform.isAndroid)
+              PermissionTile(
+                icon: Icons.call_made,
+                title: "Call Phone",
+                granted: _hasCallPhonePermission,
+                onRequestPermission: () async {
+                  await _tv.requestCallPhonePermission();
+                  setCallPhonePermission = await _tv.hasCallPhonePermission();
+                },
+              ),
+    
+            // if android
+            if (!kIsWeb && Platform.isAndroid)
+              PermissionTile(
+                icon: Icons.call_received,
+                title: "Manage Calls",
+                granted: _hasManageCallsPermission,
+                onRequestPermission: () async {
+                  await _tv.requestManageOwnCallsPermission();
+                  setManageCallsPermission = await _tv.hasManageOwnCallsPermission();
+                },
+              ),
+    
+            // if android
+            if (!kIsWeb && Platform.isAndroid)
+              PermissionTile(
+                icon: Icons.phonelink_setup,
+                title: "Phone Account",
+                granted: _hasRegisteredPhoneAccount,
+                onRequestPermission: () async {
+                  await _tv.registerPhoneAccount();
+                  setPhoneAccountRegistered = await _tv.hasRegisteredPhoneAccount();
+                },
+              ),
+    
+            // if android
+            if (!kIsWeb && Platform.isAndroid)
+              ListTile(
+                enabled: _hasRegisteredPhoneAccount,
+                dense: true,
+                leading: const Icon(Icons.phonelink_lock_outlined),
+                title: const Text("Phone Account Status"),
+                subtitle: Text(_hasRegisteredPhoneAccount ? (_isPhoneAccountEnabled ? "Enabled" : "Not Enabled") : "Not Registered"),
+                trailing: ElevatedButton(
+                  onPressed: _hasRegisteredPhoneAccount && !_isPhoneAccountEnabled ? () => _tv.openPhoneAccountSettings() : null,
+                  child: const Text("Open Settings"),
                 ),
-
-              // if android
-              if (!kIsWeb && Platform.isAndroid)
-                PermissionTile(
-                  icon: Icons.phone,
-                  title: "Read Phone State",
-                  granted: _hasReadPhoneStatePermission,
-                  onRequestPermission: () async {
-                    await _tv.requestReadPhoneStatePermission();
-                    setReadPhoneStatePermission = await _tv.hasReadPhoneStatePermission();
-                  },
-                ),
-
-              // if android
-              if (!kIsWeb && Platform.isAndroid)
-                PermissionTile(
-                  icon: Icons.phone,
-                  title: "Read Phone Numbers",
-                  granted: _hasReadPhoneNumbersPermission,
-                  onRequestPermission: () async {
-                    await _tv.requestReadPhoneNumbersPermission();
-                    setReadPhoneNumbersPermission = await _tv.hasReadPhoneNumbersPermission();
-                  },
-                ),
-
-              // if android
-              if (!kIsWeb && Platform.isAndroid)
-                PermissionTile(
-                  icon: Icons.call_made,
-                  title: "Call Phone",
-                  granted: _hasCallPhonePermission,
-                  onRequestPermission: () async {
-                    await _tv.requestCallPhonePermission();
-                    setCallPhonePermission = await _tv.hasCallPhonePermission();
-                  },
-                ),
-
-              // if android
-              if (!kIsWeb && Platform.isAndroid)
-                PermissionTile(
-                  icon: Icons.call_received,
-                  title: "Manage Calls",
-                  granted: _hasManageCallsPermission,
-                  onRequestPermission: () async {
-                    await _tv.requestManageOwnCallsPermission();
-                    setManageCallsPermission = await _tv.hasManageOwnCallsPermission();
-                  },
-                ),
-
-              // if android
-              if (!kIsWeb && Platform.isAndroid)
-                PermissionTile(
-                  icon: Icons.phonelink_setup,
-                  title: "Phone Account",
-                  granted: _hasRegisteredPhoneAccount,
-                  onRequestPermission: () async {
-                    await _tv.registerPhoneAccount();
-                    setPhoneAccountRegistered = await _tv.hasRegisteredPhoneAccount();
-                  },
-                ),
-
-              // if android
-              if (!kIsWeb && Platform.isAndroid)
-                ListTile(
-                  enabled: _hasRegisteredPhoneAccount,
-                  dense: true,
-                  leading: const Icon(Icons.phonelink_lock_outlined),
-                  title: const Text("Phone Account Status"),
-                  subtitle: Text(_hasRegisteredPhoneAccount ? (_isPhoneAccountEnabled ? "Enabled" : "Not Enabled") : "Not Registered"),
-                  trailing: ElevatedButton(
-                    onPressed: _hasRegisteredPhoneAccount && !_isPhoneAccountEnabled ? () => _tv.openPhoneAccountSettings() : null,
-                    child: const Text("Open Settings"),
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
+              ),
+          ],
+        ),
+      ],
     );
   }
 

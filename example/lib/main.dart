@@ -74,7 +74,7 @@ void main() async {
 
   final app = App(
       registrationMethod:
-          RegistrationMethod.loadFromEnvironment() ?? RegistrationMethod.env);
+          RegistrationMethod.loadFromEnvironment() ?? RegistrationMethod.local);
   return runApp(MaterialApp(home: app));
 }
 
